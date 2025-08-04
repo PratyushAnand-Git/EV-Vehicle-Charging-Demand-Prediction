@@ -1,0 +1,77 @@
+# EV Charging Demand Presentation
+# This is a template structure - you'll need to create the actual PowerPoint file
+
+# Slide 1: Title Slide
+**EV Charging Demand Presentation**
+Name: Anand
+Student-ID: [Your Student ID]
+AICTE-ID: [Your AICTE ID]
+
+# Slide 2: Learning Objectives
+## Learning Objectives
+• Analyze EV adoption patterns in Washington State counties
+• Develop time-series forecasting models for EV demand prediction
+• Create interactive dashboards for infrastructure planning
+• Implement machine learning algorithms for predictive analytics
+• Design scalable solutions for charging station deployment
+• Evaluate growth trends and future EV market scenarios
+
+# Slide 3: Tools and Technologies
+## Tools and Technologies
+**Programming Language:** Python
+**Environment:** Streamlit, Jupyter Notebook
+**Libraries:** 
+- Pandas, NumPy (Data Processing)
+- Scikit-learn (Machine Learning)
+- Matplotlib, Plotly (Visualization)
+- Joblib (Model Serialization)
+- Datetime (Time Series Handling)
+
+# Slide 4: Methodology
+## Methodology
+**Data Collection:** Washington State EV Registration Dataset
+**Data Loading:** CSV file processing with Pandas
+**Data Processing:** 
+- Feature engineering (lag features, rolling means)
+- County encoding and temporal features
+- Data cleaning and preprocessing
+**Model Development:** Time-series forecasting with ML algorithms
+**Deployment:** Streamlit web application
+**Validation:** Historical data validation and accuracy metrics
+
+# Slide 5: Problem Statement
+## Problem Statement
+**Location:** Washington State (Based on EV Registration Dataset)
+• **Infrastructure Gap:** Insufficient charging stations to support growing EV adoption across counties
+• **Demand Forecasting:** Need for accurate prediction of EV growth to plan charging infrastructure
+• **Resource Allocation:** Optimal distribution of charging stations based on county-wise demand patterns
+
+# Slide 6: Solution
+## Solution
+**Forecasting Approach:**
+- **Historical Values:** 2017-2023 EV registration data
+- **Forecasting Period:** 36 months (3 years ahead)
+- **Time Granularity:** Monthly predictions
+- **Algorithm:** Random Forest Regressor with engineered features
+- **Features:** Lag values, rolling means, percentage changes, growth slopes
+
+**GitHub Repository:** [Your GitHub Link]
+
+# Slide 7: Screenshot of Output
+## Application Screenshots
+[Include screenshots of your Streamlit app showing:]
+- County selection interface
+- Cumulative EV forecast charts
+- Key metrics dashboard
+- Multi-county comparison feature
+
+# Slide 8: Summary and Future Scope
+## Summary
+• Successfully developed an interactive EV demand forecasting system
+• Implemented time-series prediction with 36-month horizon
+• Created county-wise infrastructure planning recommendations
+• Achieved scalable web-based deployment for stakeholder access
+
+## Future Scope
+• **SVR Algorithm Integration:** Support Vector Regression for improved accuracy
+• **Real-time Data Integration:** Live updates from EV registration databases
