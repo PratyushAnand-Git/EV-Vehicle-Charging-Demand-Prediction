@@ -21,6 +21,12 @@ st.markdown("""
         .stApp {
             background: linear-gradient(to right, #c2d3f2, #7f848a);
         }
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -45,9 +51,19 @@ st.image("ev-car-factory.jpg", use_container_width=True)
 # Instruction line
 st.markdown("""
     <div style='text-align: left; font-size: 22px; padding-top: 10px; color: #FFFFFF;'>
-        Select a county and see the forecasted EV adoption trend for the next 3 years.
+        Select a county and see the forecasted EV adoption trend for the next 3 years with infrastructure planning insights.
     </div>
 """, unsafe_allow_html=True)
+
+# === Quick Stats ===
+st.markdown("---")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.info(f"📊 **Total Counties**: {len(df['County'].unique())}")
+with col2:
+    st.info(f"🚗 **Total EVs in Dataset**: {df['Electric Vehicle (EV) Total'].sum():,}")
+with col3:
+    st.info(f"📅 **Data Range**: {df['Date'].min().strftime('%Y')} - {df['Date'].max().strftime('%Y')}")
 
 
 # === Load data (must contain historical values, features, etc.) ===
@@ -141,6 +157,31 @@ ax.tick_params(colors='white')
 ax.legend()
 st.pyplot(fig)
 
+# === Key Metrics Dashboard ===
+st.markdown("---")
+st.subheader("📊 Key Metrics Dashboard")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    current_ev = historical_cum['Cumulative EV'].iloc[-1]
+    st.metric("Current EVs", f"{current_ev:,}")
+
+with col2:
+    predicted_3yr = forecast_df['Cumulative EV'].iloc[-1]
+    st.metric("Predicted (3 Years)", f"{predicted_3yr:,}")
+
+with col3:
+    if current_ev > 0:
+        growth_pct = ((predicted_3yr - current_ev) / current_ev) * 100
+        st.metric("Growth Rate", f"{growth_pct:.1f}%")
+    else:
+        st.metric("Growth Rate", "N/A")
+
+with col4:
+    charging_stations = max(1, int(predicted_3yr / 10))  # 1 station per 10 EVs
+    st.metric("Est. Charging Stations Needed", f"{charging_stations:,}")
+
 # === Compare historical and forecasted cumulative EVs ===
 historical_total = historical_cum['Cumulative EV'].iloc[-1]
 forecasted_total = forecast_df['Cumulative EV'].iloc[-1]
@@ -148,7 +189,7 @@ forecasted_total = forecast_df['Cumulative EV'].iloc[-1]
 if historical_total > 0:
     forecast_growth_pct = ((forecasted_total - historical_total) / historical_total) * 100
     trend = "increase 📈" if forecast_growth_pct > 0 else "decrease 📉"
-    st.success(f"Based on the graph, EV adoption in **{county}** is expected to show a **{trend} of {forecast_growth_pct:.2f}%** over the next 3 years.")
+    st.success(f"Based on the analysis, EV adoption in **{county}** is expected to show a **{trend} of {forecast_growth_pct:.2f}%** over the next 3 years.")
 else:
     st.warning("Historical EV total is zero, so percentage forecast change can't be computed.")
 
@@ -236,11 +277,41 @@ if multi_counties:
     ax.legend(title="County")
     st.pyplot(fig)
     
+    # === County Comparison Summary ===
+    st.subheader("📈 Growth Summary")
+    
+    summary_data = []
+    for cty in multi_counties:
+        cty_data = comp_df[comp_df['County'] == cty]
+        hist_total = cty_data['Cumulative EV'].iloc[len(cty_data)//2]  # Mid-point as historical
+        forecast_total = cty_data['Cumulative EV'].iloc[-1]
+        growth = ((forecast_total - hist_total) / hist_total * 100) if hist_total > 0 else 0
+        
+        summary_data.append({
+            'County': cty,
+            'Current EVs': f"{hist_total:,.0f}",
+            'Predicted EVs (3Y)': f"{forecast_total:,.0f}",
+            'Growth %': f"{growth:.1f}%",
+            'Charging Stations Needed': f"{max(1, int(forecast_total/10)):,}"
+        })
+    
+    summary_df = pd.DataFrame(summary_data)
+    st.dataframe(summary_df, use_container_width=True)
+    
     # Display % growth for selected counties ===
     growth_summaries = []
     for cty in multi_counties:
         cty_df = comp_df[comp_df['County'] == cty].reset_index(drop=True)
-        historical_total = cty_df['Cumulative EV'].iloc[len(cty_df) - forecast_horizon - 1]
+        historical_total = cty_df['Cumulative EV'].iloc[len(cty_df)//2]
+        forecasted_total = cty_df['Cumulative EV'].iloc[-1]
+        if historical_total > 0:
+            growth_pct = ((forecasted_total - historical_total) / historical_total) * 100
+            growth_summaries.append(f"**{cty}**: {growth_pct:.1f}% growth")
+    
+    if growth_summaries:
+        st.markdown("### 📈 Growth Insights:")
+        for summary in growth_summaries:
+            st.write(summary) EV'].iloc[len(cty_df) - forecast_horizon - 1]
         forecasted_total = cty_df['Cumulative EV'].iloc[-1]
 
         if historical_total > 0:
